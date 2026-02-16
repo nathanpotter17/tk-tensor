@@ -13,12 +13,13 @@ from enum import Enum
 # ═══════════════════════════════════════════════════════════════
 
 class ModelType(Enum):
-    SD15   = "sd1.5"
-    SD20   = "sd2.x"
-    SDXL   = "sdxl"
-    SD3    = "sd3"
-    FLUX   = "flux"
-    FLUX2  = "flux2"
+    SD15       = "sd1.5"
+    SD20       = "sd2.x"
+    SDXL       = "sdxl"
+    SD3        = "sd3"
+    FLUX       = "flux"
+    FLUX2      = "flux2"
+    QWEN_IMAGE = "qwen_image"
 
 class ModelConfig:
     """
@@ -27,27 +28,7 @@ class ModelConfig:
     to its metadata and default generation parameters.
     """
     CONFIGS = {
-        # ── SD 1.5 ──────────────────────────────────────────────
-        "v1-5-pruned-emaonly.safetensors": {
-            "type": ModelType.SD15,
-            "name": "Stable Diffusion 1.5",
-            "default_steps": "20", "default_cfg": "7.5",
-            "default_width": "512", "default_height": "512",
-            "default_sampler": "euler_a", "default_seed": "-1",
-            "model_flag": "-m", "extra_files": {},
-            "clip_on_cpu": False, "flash_attn": False,
-        },
-        # ── SD 2.1 ─────────────────────────────────────────────
-        "v2-1_768-nonema-pruned.safetensors": {
-            "type": ModelType.SD20,
-            "name": "Stable Diffusion 2.1 (768)",
-            "default_steps": "25", "default_cfg": "7.0",
-            "default_width": "768", "default_height": "768",
-            "default_sampler": "euler_a", "default_seed": "-1",
-            "model_flag": "-m", "extra_files": {},
-            "clip_on_cpu": False, "flash_attn": False,
-        },
-        # ── SDXL ───────────────────────────────────────────────
+        # ── SDXL ────────────────────────────────────────────
         "sd_xl_base_1.0.safetensors": {
             "type": ModelType.SDXL,
             "name": "Stable Diffusion XL 1.0",
@@ -57,22 +38,7 @@ class ModelConfig:
             "model_flag": "-m", "extra_files": {},
             "clip_on_cpu": False, "flash_attn": False,
         },
-        # ── SD 3.5 Medium ──────────────────────────────────────
-        "sd3.5_medium.safetensors": {
-            "type": ModelType.SD3,
-            "name": "Stable Diffusion 3.5 Medium",
-            "default_steps": "28", "default_cfg": "4.5",
-            "default_width": "1024", "default_height": "1024",
-            "default_sampler": "euler", "default_seed": "-1",
-            "model_flag": "-m",
-            "extra_files": {
-                "--clip-l": "clip_l.safetensors",
-                "--clip-g": "clip_g.safetensors",
-                "--t5xxl":  "t5xxl_fp16.safetensors",
-            },
-            "clip_on_cpu": True, "flash_attn": True,
-        },
-        # ── FLUX.1-schnell (GGUF quantized) ────────────────────
+        # ── FLUX.1-schnell (GGUF quantized) ────────────────
         "flux1-schnell-q4_0.gguf": {
             "type": ModelType.FLUX,
             "name": "FLUX.1 Schnell (Q4)",
@@ -81,7 +47,35 @@ class ModelConfig:
             "default_sampler": "euler", "default_seed": "-1",
             "model_flag": "--diffusion-model",
             "extra_files": {
-                "--clip-l": "clip_l.safetensors",
+                "--clip_l": "clip_l.safetensors",
+                "--t5xxl":  "t5xxl_fp16.safetensors",
+                "--vae":    "ae.safetensors",
+            },
+            "clip_on_cpu": True, "flash_attn": True,
+        },
+        "flux1-schnell-q5_0.gguf": {
+            "type": ModelType.FLUX,
+            "name": "FLUX.1 Schnell (Q5)",
+            "default_steps": "4", "default_cfg": "1.0",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--clip_l": "clip_l.safetensors",
+                "--t5xxl":  "t5xxl_fp16.safetensors",
+                "--vae":    "ae.safetensors",
+            },
+            "clip_on_cpu": True, "flash_attn": True,
+        },
+        "flux1-schnell-q5_1.gguf": {
+            "type": ModelType.FLUX,
+            "name": "FLUX.1 Schnell (Q5_1)",
+            "default_steps": "4", "default_cfg": "1.0",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--clip_l": "clip_l.safetensors",
                 "--t5xxl":  "t5xxl_fp16.safetensors",
                 "--vae":    "ae.safetensors",
             },
@@ -95,13 +89,13 @@ class ModelConfig:
             "default_sampler": "euler", "default_seed": "-1",
             "model_flag": "--diffusion-model",
             "extra_files": {
-                "--clip-l": "clip_l.safetensors",
+                "--clip_l": "clip_l.safetensors",
                 "--t5xxl":  "t5xxl_fp16.safetensors",
                 "--vae":    "ae.safetensors",
             },
             "clip_on_cpu": True, "flash_attn": True,
         },
-        # ── FLUX.1-dev (GGUF quantized) ────────────────────────
+        # ── FLUX.1-dev (GGUF quantized) ────────────────────
         "flux1-dev-q4_0.gguf": {
             "type": ModelType.FLUX,
             "name": "FLUX.1 Dev (Q4)",
@@ -110,7 +104,63 @@ class ModelConfig:
             "default_sampler": "euler", "default_seed": "-1",
             "model_flag": "--diffusion-model",
             "extra_files": {
-                "--clip-l": "clip_l.safetensors",
+                "--clip_l": "clip_l.safetensors",
+                "--t5xxl":  "t5xxl_fp16.safetensors",
+                "--vae":    "ae.safetensors",
+            },
+            "clip_on_cpu": True, "flash_attn": True,
+        },
+        "flux1-dev-q4_k.gguf": {
+            "type": ModelType.FLUX,
+            "name": "FLUX.1 Dev (Q4_K)",
+            "default_steps": "20", "default_cfg": "3.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--clip_l": "clip_l.safetensors",
+                "--t5xxl":  "t5xxl_fp16.safetensors",
+                "--vae":    "ae.safetensors",
+            },
+            "clip_on_cpu": True, "flash_attn": True,
+        },
+        "flux1-dev-q5_0.gguf": {
+            "type": ModelType.FLUX,
+            "name": "FLUX.1 Dev (Q5)",
+            "default_steps": "20", "default_cfg": "3.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--clip_l": "clip_l.safetensors",
+                "--t5xxl":  "t5xxl_fp16.safetensors",
+                "--vae":    "ae.safetensors",
+            },
+            "clip_on_cpu": True, "flash_attn": True,
+        },
+        "flux1-dev-q5_1.gguf": {
+            "type": ModelType.FLUX,
+            "name": "FLUX.1 Dev (Q5_1)",
+            "default_steps": "20", "default_cfg": "3.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--clip_l": "clip_l.safetensors",
+                "--t5xxl":  "t5xxl_fp16.safetensors",
+                "--vae":    "ae.safetensors",
+            },
+            "clip_on_cpu": True, "flash_attn": True,
+        },
+        "flux1-dev-q5_k.gguf": {
+            "type": ModelType.FLUX,
+            "name": "FLUX.1 Dev (Q5_K)",
+            "default_steps": "20", "default_cfg": "3.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--clip_l": "clip_l.safetensors",
                 "--t5xxl":  "t5xxl_fp16.safetensors",
                 "--vae":    "ae.safetensors",
             },
@@ -124,11 +174,82 @@ class ModelConfig:
             "default_sampler": "euler", "default_seed": "-1",
             "model_flag": "--diffusion-model",
             "extra_files": {
-                "--clip-l": "clip_l.safetensors",
+                "--clip_l": "clip_l.safetensors",
                 "--t5xxl":  "t5xxl_fp16.safetensors",
                 "--vae":    "ae.safetensors",
             },
             "clip_on_cpu": True, "flash_attn": True,
+        },
+        # ── Qwen-Image-2512 (GGUF quantized) ──────────────
+        "qwen-image-2512-Q3_K_M.gguf": {
+            "type": ModelType.QWEN_IMAGE,
+            "name": "Qwen-Image 2512 (Q3_K_M)",
+            "default_steps": "40", "default_cfg": "2.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--llm": "Qwen2.5-VL-7B-Instruct-UD-Q4_K_XL.gguf",
+                "--vae": "qwen_image_vae.safetensors",
+            },
+            "clip_on_cpu": False, "flash_attn": True,
+            "flow_shift": "3", "offload_to_cpu": True,
+        },
+        "qwen-image-2512-Q4_K_M.gguf": {
+            "type": ModelType.QWEN_IMAGE,
+            "name": "Qwen-Image 2512 (Q4_K_M)",
+            "default_steps": "40", "default_cfg": "2.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--llm": "Qwen2.5-VL-7B-Instruct-UD-Q4_K_XL.gguf",
+                "--vae": "qwen_image_vae.safetensors",
+            },
+            "clip_on_cpu": False, "flash_attn": True,
+            "flow_shift": "3", "offload_to_cpu": True,
+        },
+        "qwen-image-2512-Q5_K_M.gguf": {
+            "type": ModelType.QWEN_IMAGE,
+            "name": "Qwen-Image 2512 (Q5_K_M)",
+            "default_steps": "40", "default_cfg": "2.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--llm": "Qwen2.5-VL-7B-Instruct-UD-Q4_K_XL.gguf",
+                "--vae": "qwen_image_vae.safetensors",
+            },
+            "clip_on_cpu": False, "flash_attn": True,
+            "flow_shift": "3", "offload_to_cpu": True,
+        },
+        "qwen-image-2512-Q6_K.gguf": {
+            "type": ModelType.QWEN_IMAGE,
+            "name": "Qwen-Image 2512 (Q6_K)",
+            "default_steps": "40", "default_cfg": "2.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--llm": "Qwen2.5-VL-7B-Instruct-UD-Q4_K_XL.gguf",
+                "--vae": "qwen_image_vae.safetensors",
+            },
+            "clip_on_cpu": False, "flash_attn": True,
+            "flow_shift": "3", "offload_to_cpu": True,
+        },
+        "qwen-image-2512-Q8_0.gguf": {
+            "type": ModelType.QWEN_IMAGE,
+            "name": "Qwen-Image 2512 (Q8)",
+            "default_steps": "40", "default_cfg": "2.5",
+            "default_width": "1024", "default_height": "1024",
+            "default_sampler": "euler", "default_seed": "-1",
+            "model_flag": "--diffusion-model",
+            "extra_files": {
+                "--llm": "Qwen2.5-VL-7B-Instruct-UD-Q4_K_XL.gguf",
+                "--vae": "qwen_image_vae.safetensors",
+            },
+            "clip_on_cpu": False, "flash_attn": True,
+            "flow_shift": "3", "offload_to_cpu": True,
         },
     }
 
@@ -138,17 +259,18 @@ class ModelConfig:
     ]
 
     RESOLUTIONS = [
-        ("512 × 512",   512,  512),
-        ("512 × 768",   512,  768),
-        ("768 × 512",   768,  512),
-        ("768 × 768",   768,  768),
-        ("1024 × 1024", 1024, 1024),
-        ("1024 × 768",  1024, 768),
-        ("768 × 1024",  768,  1024),
-        ("1024 × 576",  1024, 576),
-        ("576 × 1024",  576,  1024),
-        ("1280 × 720",  1280, 720),
-        ("1536 × 1024", 1536, 1024),
+        ("512 x 512",   512,  512),
+        ("512 x 768",   512,  768),
+        ("768 x 512",   768,  512),
+        ("768 x 768",   768,  768),
+        ("1024 x 1024", 1024, 1024),
+        ("1024 x 768",  1024, 768),
+        ("768 x 1024",  768,  1024),
+        ("1024 x 576",  1024, 576),
+        ("576 x 1024",  576,  1024),
+        ("1280 x 720",  1280, 720),
+        ("1328 x 1328", 1328, 1328),
+        ("1536 x 1024", 1536, 1024),
         ("Custom", 0, 0),
     ]
 
@@ -162,7 +284,7 @@ class SDGui:
 
     def __init__(self, root):
         self.root = root
-        self.root.title("Local Image Gen")
+        self.root.title("TK TENSORS")
         self.root.geometry("1200x800")
         self.root.minsize(900, 560)
 
@@ -183,7 +305,8 @@ class SDGui:
         self.generation_thread = None
         self.is_generating = False
         self.last_image_path = None
-        self._preview_photo = None          # prevent GC of PhotoImage
+        self._preview_photo = None
+        self._preview_full = None
 
         self.available_models = self._detect_models()
 
@@ -241,16 +364,16 @@ class SDGui:
         toolbar.pack(side=tk.TOP, fill=tk.X)
 
         self.generate_btn = ttk.Button(
-            toolbar, text="▶ Generate", command=self._generate,
+            toolbar, text="Generate", command=self._generate,
             state=tk.NORMAL if self.available_models else tk.DISABLED)
         self.generate_btn.pack(side=tk.LEFT, padx=2)
 
         self.stop_btn = ttk.Button(
-            toolbar, text="■ Stop", command=self._stop_generation, state=tk.DISABLED)
+            toolbar, text="Stop", command=self._stop_generation, state=tk.DISABLED)
         self.stop_btn.pack(side=tk.LEFT, padx=2)
 
         self.kill_btn = ttk.Button(
-            toolbar, text="⚠ KILL", command=self._force_shutdown, state=tk.DISABLED)
+            toolbar, text="KILL", command=self._force_shutdown, state=tk.DISABLED)
         self.kill_btn.pack(side=tk.LEFT, padx=2)
 
         ttk.Separator(toolbar, orient=tk.VERTICAL).pack(side=tk.LEFT, fill=tk.Y, padx=8)
@@ -343,7 +466,7 @@ class SDGui:
         rgrid.pack(fill=tk.X, padx=4, pady=4)
         rgrid.columnconfigure(1, weight=1)
 
-        self.resolution_var = tk.StringVar(value="1024 × 1024")
+        self.resolution_var = tk.StringVar(value="1024 x 1024")
         ttk.Label(rgrid, text="Preset", style="Sidebar.TLabel").grid(
             row=0, column=0, sticky="w", padx=(0, 8), pady=2)
         res_combo = ttk.Combobox(
@@ -381,6 +504,7 @@ class SDGui:
             ("Steps",      "steps",      "20"),
             ("CFG Scale",  "cfg_scale",  "7.5"),
             ("Seed",       "seed",       "-1"),
+            ("Flow Shift", "flow_shift", "0"),
             ("Threads",    "threads",    "8"),
             ("Batch",      "batch",      "1"),
         ]
@@ -417,6 +541,10 @@ class SDGui:
         ttk.Checkbutton(of, text="VAE Tiling (high-res, save VRAM)",
                         variable=self.vae_tiling_var).pack(anchor="w", padx=4, pady=2)
 
+        self.offload_cpu_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(of, text="Offload to CPU (low VRAM)",
+                        variable=self.offload_cpu_var).pack(anchor="w", padx=4, pady=2)
+
     # ── Prompt tab ────────────────────────────────────────────
     def _build_prompt_tab(self, parent):
         f = ttk.Frame(parent, padding="8")
@@ -442,15 +570,15 @@ class SDGui:
         info_frame.pack(fill=tk.BOTH, expand=True, pady=(4, 0))
         info_text = (
             "Prompt tips:\n"
-            "• Be descriptive: subject, style, lighting, camera, mood\n"
-            "• Example: \"a red fox in a snowy forest, digital painting, "
+            "- Be descriptive: subject, style, lighting, camera, mood\n"
+            "- Example: \"a red fox in a snowy forest, digital painting, "
             "dramatic lighting, 4k, detailed\"\n"
-            "• FLUX models: use natural language, longer prompts work well\n"
-            "• SD models: comma-separated tags work best\n"
-            "• CFG scale: higher = more prompt adherence, lower = more creative\n"
+            "- FLUX models: use natural language, longer prompts work well\n"
+            "- SD models: comma-separated tags work best\n"
+            "- CFG scale: higher = more prompt adherence, lower = more creative\n"
             "  (FLUX uses cfg 1.0-3.5, SD uses 5.0-12.0)\n"
-            "• Steps: FLUX-schnell needs only 4, SD models need 20-30\n"
-            "• Negative prompt is ignored by FLUX (cfg_scale=1.0 disables it)"
+            "- Steps: FLUX-schnell needs only 4, SD models need 20-30\n"
+            "- Negative prompt is ignored by FLUX (cfg_scale=1.0 disables it)"
         )
         ttk.Label(info_frame, text=info_text, style="Sidebar.TLabel",
                   wraplength=600, justify="left").pack(padx=8, pady=8, anchor="w")
@@ -534,6 +662,11 @@ class SDGui:
         self.sampler_var.set(cfg["default_sampler"])
         self.clip_cpu_var.set(cfg["clip_on_cpu"])
         self.flash_attn_var.set(cfg["flash_attn"])
+        self.offload_cpu_var.set(cfg.get("offload_to_cpu", False))
+
+        fs = cfg.get("flow_shift", "0")
+        self.params["flow_shift"].delete(0, tk.END)
+        self.params["flow_shift"].insert(0, fs)
 
         w, h = int(cfg["default_width"]), int(cfg["default_height"])
         matched = False
@@ -631,6 +764,14 @@ class SDGui:
                 "in the air. Shot with a macro lens, shallow depth of field.",
                 ""
             ),
+            ModelType.QWEN_IMAGE: (
+                "A photograph of a Japanese garden in autumn with a stone bridge "
+                "over a koi pond. Red maple leaves float on the still water surface, "
+                "reflecting the golden afternoon light. A weathered wooden sign reads "
+                "\"Peaceful Garden\" in elegant calligraphy. Shot on medium format film, "
+                "soft natural light, 8K resolution.",
+                ""
+            ),
         }
         default = (
             "a lovely cat sitting on a windowsill, sunlight, cozy, detailed",
@@ -653,7 +794,6 @@ class SDGui:
             cw = max(self.preview_canvas.winfo_width(), 200)
             ch = max(self.preview_canvas.winfo_height(), 200)
 
-            # Compute integer subsample factor to fit canvas
             factor = max(1, math.ceil(iw / cw), math.ceil(ih / ch))
 
             if factor > 1:
@@ -661,8 +801,8 @@ class SDGui:
             else:
                 scaled = full
 
-            self._preview_photo = scaled        # prevent GC
-            self._preview_full = full           # keep full-res alive too
+            self._preview_photo = scaled
+            self._preview_full = full
 
             self.preview_canvas.delete("all")
             self.preview_canvas.create_image(
@@ -670,8 +810,8 @@ class SDGui:
 
             sw, sh = scaled.width(), scaled.height()
             self.preview_info_var.set(
-                f"{os.path.basename(image_path)}  —  {iw}×{ih}"
-                f"  (preview {sw}×{sh} at 1/{factor})")
+                f"{os.path.basename(image_path)}  --  {iw}x{ih}"
+                f"  (preview {sw}x{sh} at 1/{factor})")
 
         except Exception as e:
             self.preview_info_var.set(f"Preview error: {e}")
@@ -679,7 +819,6 @@ class SDGui:
             self._preview_full = None
 
     def _on_canvas_resize(self, event=None):
-        """Re-render preview when canvas is resized."""
         if self.last_image_path and os.path.isfile(self.last_image_path):
             self._show_preview(self.last_image_path)
 
@@ -770,11 +909,17 @@ class SDGui:
             cmd.extend(["-b", batch])
 
         if self.clip_cpu_var.get():
-            cmd.append("--keep-clip-on-cpu")
+            cmd.append("--clip-on-cpu")
         if self.flash_attn_var.get():
             cmd.append("--diffusion-fa")
         if self.vae_tiling_var.get():
             cmd.append("--vae-tiling")
+        if self.offload_cpu_var.get():
+            cmd.append("--offload-to-cpu")
+
+        flow_shift = self.params["flow_shift"].get().strip()
+        if flow_shift and flow_shift != "0":
+            cmd.extend(["--flow-shift", flow_shift])
 
         # Switch to log and display header
         self.notebook.select(2)
@@ -783,7 +928,7 @@ class SDGui:
         self.log_text.insert(tk.END, f"{sep}\n", "info")
         self.log_text.insert(tk.END, f"  {cfg['name']}\n", "info")
         self.log_text.insert(tk.END,
-            f"  {self.params['width'].get()}×{self.params['height'].get()}"
+            f"  {self.params['width'].get()}x{self.params['height'].get()}"
             f"  |  {self.params['steps'].get()} steps"
             f"  |  cfg {self.params['cfg_scale'].get()}"
             f"  |  {self.sampler_var.get()}\n", "info")
@@ -935,6 +1080,7 @@ class SDGui:
             "clip_on_cpu": self.clip_cpu_var.get(),
             "flash_attn": self.flash_attn_var.get(),
             "vae_tiling": self.vae_tiling_var.get(),
+            "offload_to_cpu": self.offload_cpu_var.get(),
             "parameters": {k: e.get() for k, e in self.params.items()},
             "prompt": self.prompt_text.get(1.0, tk.END).strip(),
             "negative_prompt": self.neg_prompt_text.get(1.0, tk.END).strip(),
@@ -972,6 +1118,8 @@ class SDGui:
                 self.flash_attn_var.set(config["flash_attn"])
             if "vae_tiling" in config:
                 self.vae_tiling_var.set(config["vae_tiling"])
+            if "offload_to_cpu" in config:
+                self.offload_cpu_var.set(config["offload_to_cpu"])
 
             if "parameters" in config:
                 for k, v in config["parameters"].items():

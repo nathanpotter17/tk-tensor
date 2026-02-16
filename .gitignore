@@ -3,3 +3,4 @@
 *.safetensors
 *.txt
 *.exe
+*.gguf
